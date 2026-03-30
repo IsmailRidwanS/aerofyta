@@ -1,7 +1,7 @@
 {
   "project_name": "AeroFyta",
-  "repo_url": "https://github.com/aerofyta/aerofyta",
-  "commit_sha": "0000000000000000000000000000000000000000",
+  "repo_url": "https://github.com/IsmailRidwanS/aerofyta",
+  "commit_sha": "fd37cb669abb02c0ab4e3edde321bfe7c6902734",
   "rollup_chain_id": "aerofyta-1",
   "deployed_address": "0x0000000000000000000000000000000000000000",
   "vm": "evm",
