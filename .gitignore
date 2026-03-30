@@ -6,6 +6,7 @@ out/
 cache/
 contracts/out/
 contracts/cache/
+contracts/lib/
 __pycache__/
 *.pyc
 .DS_Store

@@ -13,48 +13,50 @@ interface FeedItem {
   amount?: string;
 }
 
-// Demo feed items — in production these come from WebSocket/on-chain events
-const demoFeedItems: FeedItem[] = [
-  {
-    id: "1",
-    type: "agent_registered",
-    agentName: "acme-analyst.init",
-    description: "Registered as Data Analysis provider | Staked 200 INIT",
-    timestamp: Date.now() - 300000,
-    amount: "200 INIT",
-  },
-  {
-    id: "2",
-    type: "sla_created",
-    agentName: "globex-buyer.init",
-    description: "Created SLA #1 | Data Analysis | Payment: 30 INIT | Deadline: 1h",
-    timestamp: Date.now() - 240000,
-    amount: "30 INIT",
-  },
-  {
-    id: "3",
-    type: "sla_delivered",
-    agentName: "acme-analyst.init",
-    description: "Delivered SLA #1 | Model: Claude Sonnet 4 | Output hash: 0x9c1d...",
-    timestamp: Date.now() - 180000,
-  },
-  {
-    id: "4",
-    type: "sla_settled",
-    agentName: "globex-buyer.init",
-    description: "Settled SLA #1 | Provider paid: 29.85 INIT | Fee: 0.15 INIT",
-    timestamp: Date.now() - 120000,
-    amount: "29.85 INIT",
-  },
-  {
-    id: "5",
-    type: "sla_breached",
-    agentName: "acme-analyst.init",
-    description: "SLA #2 Breached | Deadline missed | Slashed: 15 INIT",
-    timestamp: Date.now() - 60000,
-    amount: "15 INIT",
-  },
-];
+function getDemoFeedItems(): FeedItem[] {
+  const now = Date.now();
+  return [
+    {
+      id: "1",
+      type: "agent_registered",
+      agentName: "acme-analyst.init",
+      description: "Registered as Data Analysis provider | Staked 200 INIT",
+      timestamp: now - 300000,
+      amount: "200 INIT",
+    },
+    {
+      id: "2",
+      type: "sla_created",
+      agentName: "globex-buyer.init",
+      description: "Created SLA #1 | Data Analysis | Payment: 30 INIT | Deadline: 1h",
+      timestamp: now - 240000,
+      amount: "30 INIT",
+    },
+    {
+      id: "3",
+      type: "sla_delivered",
+      agentName: "acme-analyst.init",
+      description: "Delivered SLA #1 | Model: Claude Sonnet 4 | Output hash: 0x9c1d...",
+      timestamp: now - 180000,
+    },
+    {
+      id: "4",
+      type: "sla_settled",
+      agentName: "globex-buyer.init",
+      description: "Settled SLA #1 | Provider paid: 29.85 INIT | Fee: 0.15 INIT",
+      timestamp: now - 120000,
+      amount: "29.85 INIT",
+    },
+    {
+      id: "5",
+      type: "sla_breached",
+      agentName: "acme-analyst.init",
+      description: "SLA #2 Breached | Deadline missed | Slashed: 15 INIT",
+      timestamp: now - 60000,
+      amount: "15 INIT",
+    },
+  ];
+}
 
 const typeConfig: Record<string, { color: string; label: string }> = {
   agent_registered: { color: "bg-blue-500", label: "REGISTERED" },
@@ -73,7 +75,7 @@ function formatTimestamp(ts: number): string {
 }
 
 export default function LiveFeed() {
-  const [items] = useState<FeedItem[]>(demoFeedItems);
+  const [items] = useState<FeedItem[]>(() => getDemoFeedItems());
 
   // TODO: Replace with WebSocket subscription to on-chain events
 
