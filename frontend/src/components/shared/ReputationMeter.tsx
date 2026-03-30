@@ -30,11 +30,6 @@ export default function ReputationMeter({
     score >= 40 ? "#fbbf24" :
     "#f87171";
 
-  const bgColor =
-    score >= 70 ? "rgba(74,222,128,0.08)" :
-    score >= 40 ? "rgba(251,191,36,0.08)" :
-    "rgba(248,113,113,0.08)";
-
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">

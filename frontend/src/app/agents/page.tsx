@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import ReputationMeter from "@/components/shared/ReputationMeter";
+import AnimatedNumber from "@/components/shared/AnimatedNumber";
+import Sparkline from "@/components/shared/Sparkline";
 
 interface Agent {
   id: number;
@@ -120,19 +123,22 @@ export default function AgentsPage() {
                   </span>
                 </div>
 
-                <p className="text-[12px] text-slate-400 mb-4">{agent.description}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-[12px] text-slate-400 flex-1">{agent.description}</p>
+                  <ReputationMeter score={score} size={44} className="ml-3 flex-shrink-0" />
+                </div>
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { label: "STAKED", value: agent.stake, color: "text-white" },
-                    { label: "EARNED", value: agent.earnings, color: "text-emerald-400" },
-                    { label: "ACTIVE", value: agent.activeSLAs.toString(), color: "text-cyan-400" },
-                    { label: "SCORE", value: `${score}%`, color: score >= 90 ? "text-emerald-400" : score >= 70 ? "text-amber-400" : "text-red-400" },
+                    { label: "STAKED", value: Number(agent.stake), color: "text-white" },
+                    { label: "EARNED", value: Number(agent.earnings), color: "text-emerald-400" },
+                    { label: "ACTIVE", value: agent.activeSLAs, color: "text-cyan-400" },
+                    { label: "SCORE", value: score, color: score >= 90 ? "text-emerald-400" : score >= 70 ? "text-amber-400" : "text-red-400" },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center py-2.5 rounded-lg"
                       style={{ background: 'rgba(99,102,241,0.03)', border: '1px solid rgba(99,102,241,0.04)' }}>
-                      <p className={`text-[14px] font-bold ${stat.color}`} style={{ fontFeatureSettings: "'tnum'" }}>{stat.value}</p>
+                      <AnimatedNumber value={stat.value} decimals={stat.label === "EARNED" ? 2 : 0} suffix={stat.label === "SCORE" ? "%" : ""} className={`text-[14px] font-bold ${stat.color}`} />
                       <p className="text-[9px] text-slate-600 font-semibold uppercase tracking-wider mt-0.5">{stat.label}</p>
                     </div>
                   ))}

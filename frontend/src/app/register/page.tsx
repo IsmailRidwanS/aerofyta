@@ -51,9 +51,10 @@ export default function RegisterPage() {
         setStep(4);
         setTxHash("0xdemo_" + Math.random().toString(36).slice(2, 18));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Register] Error:", err);
-      setError(err?.reason || err?.message || "Registration failed");
+      const e = err as { reason?: string; message?: string };
+      setError(e?.reason || e?.message || "Registration failed");
       setStep(0);
     } finally {
       setIsSubmitting(false);

@@ -1,5 +1,36 @@
 "use client";
 
+import { PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import AnimatedNumber from "@/components/shared/AnimatedNumber";
+
+const slaTimelineData = [
+  { day: "Day 1", created: 0, settled: 0, breached: 0 },
+  { day: "Day 2", created: 1, settled: 0, breached: 0 },
+  { day: "Day 3", created: 1, settled: 1, breached: 0 },
+  { day: "Day 4", created: 2, settled: 1, breached: 0 },
+  { day: "Day 5", created: 2, settled: 1, breached: 1 },
+];
+
+const revenuePieData = [
+  { name: "Registration", value: 50, color: "#22d3ee" },
+  { name: "Slash", value: 3, color: "#f87171" },
+  { name: "Fees", value: 0.15, color: "#818cf8" },
+];
+
+const ChartTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg px-3 py-2 text-[11px]" style={{
+      background: 'rgba(15,16,41,0.95)', border: '1px solid rgba(99,102,241,0.15)', backdropFilter: 'blur(10px)',
+    }}>
+      <p className="text-slate-400 mb-1">{label}</p>
+      {payload.map((p: any, i: number) => (
+        <p key={i} style={{ color: p.color }} className="font-mono">{p.name}: {p.value}</p>
+      ))}
+    </div>
+  );
+};
+
 export default function AnalyticsPage() {
   const metrics = {
     totalAgents: 2,
@@ -72,6 +103,79 @@ export default function AnalyticsPage() {
             glow="rgba(16,185,129,0.2)"
             highlight
           />
+        </div>
+      </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* SLA Timeline Chart */}
+        <div className="card">
+          <h3 className="text-[14px] font-semibold text-white mb-4">SLA Activity Over Time</h3>
+          <div className="h-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={slaTimelineData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="createdGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#818cf8" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#818cf8" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="settledGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4ade80" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#475569' }} />
+                <YAxis hide />
+                <Tooltip content={<ChartTooltip />} />
+                <Area type="monotone" dataKey="created" name="Created" stroke="#818cf8" strokeWidth={2} fill="url(#createdGrad)" dot={false} />
+                <Area type="monotone" dataKey="settled" name="Settled" stroke="#4ade80" strokeWidth={2} fill="url(#settledGrad)" dot={false} />
+                <Area type="monotone" dataKey="breached" name="Breached" stroke="#f87171" strokeWidth={2} fill="none" dot={false} strokeDasharray="4 4" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center gap-4 mt-3">
+            <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-indigo-400 rounded" /><span className="text-[10px] text-slate-500">Created</span></div>
+            <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-emerald-400 rounded" /><span className="text-[10px] text-slate-500">Settled</span></div>
+            <div className="flex items-center gap-1.5"><div className="w-3 h-0.5 bg-red-400 rounded border-dashed" /><span className="text-[10px] text-slate-500">Breached</span></div>
+          </div>
+        </div>
+
+        {/* Revenue Pie Chart */}
+        <div className="card">
+          <h3 className="text-[14px] font-semibold text-white mb-4">Revenue Sources</h3>
+          <div className="flex items-center justify-center gap-6">
+            <div className="w-[140px] h-[140px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={revenuePieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={65}
+                    paddingAngle={3}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {revenuePieData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-3">
+              {revenuePieData.map((item) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: item.color }} />
+                  <div>
+                    <p className="text-[12px] text-white font-medium">{item.name}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{item.value} INIT</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

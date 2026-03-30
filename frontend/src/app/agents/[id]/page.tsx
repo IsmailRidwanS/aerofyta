@@ -28,7 +28,7 @@ const slaHistory = [
 
 export default function AgentDetailPage() {
   const params = useParams();
-  const agentId = params.id;
+  const _agentId = params.id; // Used for on-chain queries when deployed
   const performanceScore = demoAgent.totalSLAs > 0
     ? Math.round((demoAgent.completedSLAs / demoAgent.totalSLAs) * 100)
     : 100;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/lib/providers";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import AnimatedNumber from "@/components/shared/AnimatedNumber";
 import Sparkline from "@/components/shared/Sparkline";
 
