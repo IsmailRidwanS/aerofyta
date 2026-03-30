@@ -2,15 +2,21 @@
 
 import { useApp } from "@/lib/providers";
 import { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import AnimatedNumber from "@/components/shared/AnimatedNumber";
+import Sparkline from "@/components/shared/Sparkline";
 
 interface Stat {
   label: string;
-  value: string;
+  value: number;
+  decimals: number;
   sublabel: string;
+  change: string;
+  changeType: "positive" | "negative" | "neutral";
   icon: React.ReactNode;
   gradient: string;
   glowColor: string;
+  sparkData: number[];
+  sparkColor: string;
 }
 
 export default function StatsCards() {
@@ -19,39 +25,58 @@ export default function StatsCards() {
   const stats: Stat[] = [
     {
       label: "Total Agents",
-      value: "2",
+      value: 2,
+      decimals: 0,
       sublabel: "2 active",
+      change: "+1 this week",
+      changeType: "positive",
       icon: <AgentSVG />,
       gradient: "from-indigo-500 to-violet-500",
       glowColor: "rgba(99,102,241,0.2)",
+      sparkData: [0, 0, 1, 1, 1, 2, 2],
+      sparkColor: "#818cf8",
     },
     {
       label: "Active SLAs",
-      value: "2",
+      value: 2,
+      decimals: 0,
       sublabel: "1 settled, 1 breached",
+      change: "+2 today",
+      changeType: "positive",
       icon: <SLASVG />,
       gradient: "from-cyan-500 to-blue-500",
       glowColor: "rgba(6,182,212,0.2)",
+      sparkData: [0, 0, 1, 1, 2, 2, 2],
+      sparkColor: "#22d3ee",
     },
     {
       label: "Protocol Revenue",
-      value: "53.15",
+      value: 53.15,
+      decimals: 2,
       sublabel: "INIT earned",
+      change: "+12.5%",
+      changeType: "positive",
       icon: <RevenueSVG />,
       gradient: "from-emerald-500 to-cyan-500",
       glowColor: "rgba(16,185,129,0.2)",
+      sparkData: [0, 25, 25, 50, 50, 53, 53.15],
+      sparkColor: "#34d399",
     },
     {
       label: "Total Staked",
-      value: "300",
+      value: 300,
+      decimals: 0,
       sublabel: "INIT bonded",
+      change: "100% utilized",
+      changeType: "neutral",
       icon: <StakeSVG />,
       gradient: "from-violet-500 to-pink-500",
       glowColor: "rgba(139,92,246,0.2)",
+      sparkData: [0, 100, 100, 200, 200, 300, 300],
+      sparkColor: "#a78bfa",
     },
   ];
 
-  // TODO: fetch from contracts when deployed
   useEffect(() => {
     async function fetch() {
       if (contracts.agentVault && contracts.billingEngine) {
@@ -66,7 +91,7 @@ export default function StatsCards() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => (
-        <div key={stat.label} className="card group relative">
+        <div key={stat.label} className="card group relative hover-lift press-scale cursor-pointer">
           {/* Subtle glow on hover */}
           <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             style={{ boxShadow: `0 0 40px -10px ${stat.glowColor}` }} />
@@ -77,10 +102,18 @@ export default function StatsCards() {
                 style={{ boxShadow: `0 4px 15px -3px ${stat.glowColor}` }}>
                 {stat.icon}
               </div>
+              <Sparkline data={stat.sparkData} color={stat.sparkColor} width={64} height={22} />
             </div>
-            <p className="stat-number text-white">{stat.value}</p>
-            <p className="text-[13px] text-slate-400 mt-0.5">{stat.label}</p>
-            <p className="text-[11px] text-slate-600 mt-1">{stat.sublabel}</p>
+            <AnimatedNumber
+              value={stat.value}
+              decimals={stat.decimals}
+              className="stat-number text-white block"
+            />
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-[13px] text-slate-400">{stat.label}</p>
+              <span className={`change-${stat.changeType}`}>{stat.change}</span>
+            </div>
+            <p className="text-[11px] text-slate-600 mt-0.5">{stat.sublabel}</p>
           </div>
         </div>
       ))}
