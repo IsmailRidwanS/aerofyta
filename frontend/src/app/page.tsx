@@ -10,14 +10,21 @@ export default function Dashboard() {
       {/* Hero */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Real-time operations overview for all AI agents on AeroFyta
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Operations <span className="gradient-text">Dashboard</span>
+          </h1>
+          <p className="text-[13px] text-slate-500 mt-1">
+            Real-time overview of all AI agent operations on AeroFyta
           </p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs text-green-400 font-medium">Live</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+          style={{
+            background: 'rgba(34,197,94,0.06)',
+            border: '1px solid rgba(34,197,94,0.12)',
+          }}>
+          <div className="w-[6px] h-[6px] rounded-full bg-emerald-400 animate-pulse"
+            style={{ boxShadow: '0 0 8px rgba(52,211,153,0.5)' }} />
+          <span className="text-[11px] text-emerald-400 font-medium tracking-wide">LIVE</span>
         </div>
       </div>
 

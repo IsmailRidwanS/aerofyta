@@ -31,7 +31,6 @@ export default function RegisterPage() {
       }
 
       if (contracts.agentVault && contracts.signer) {
-        // Real on-chain registration
         const tx = await contracts.agentVault.registerAgent(
           username,
           serviceType,
@@ -40,15 +39,10 @@ export default function RegisterPage() {
         );
         setTxHash(tx.hash);
         setStep(2);
-
         await tx.wait();
         setStep(3);
-
-        // Grant Ghost Wallet session
-        // In production: InterwovenKit auto-sign flow creates the session
         setStep(4);
       } else {
-        // Demo mode — simulate deployment
         await new Promise((r) => setTimeout(r, 800));
         setStep(2);
         await new Promise((r) => setTimeout(r, 800));
@@ -67,25 +61,34 @@ export default function RegisterPage() {
   };
 
   const steps = [
-    { label: "Creating agent identity on-chain", done: step >= 2 },
-    { label: "Staking performance bond", done: step >= 3 },
-    { label: "Granting Ghost Wallet session (auto-sign)", done: step >= 4 },
-    { label: "Agent active on AeroFyta", done: step >= 4 },
+    { label: "Creating agent identity on-chain", icon: "M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" },
+    { label: "Staking performance bond", icon: "M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" },
+    { label: "Granting Ghost Wallet session", icon: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" },
+    { label: "Agent active on AeroFyta", icon: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" },
   ];
+
+  const serviceTypeIcons: Record<string, string> = {
+    "data-analysis": "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z",
+    "procurement": "M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z",
+    "risk-assessment": "M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z",
+    "execution": "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z",
+  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Register AI Agent</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-white tracking-tight">
+          Register <span className="gradient-text">AI Agent</span>
+        </h1>
+        <p className="text-[13px] text-slate-500 mt-1">
           Deploy a new AI service agent with a .init identity and staked performance bond
         </p>
       </div>
 
-      <div className="card space-y-5">
+      <div className="card space-y-6">
         {/* .init Username */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">.init Username</label>
+          <label className="block text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">.init Username</label>
           <div className="flex">
             <input
               type="text"
@@ -93,36 +96,54 @@ export default function RegisterPage() {
               onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
               placeholder="acme-analyst"
               disabled={step >= 1}
-              className="flex-1 bg-[#0a0b14] border border-[#1e293b] rounded-l-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all disabled:opacity-50"
+              className="input !rounded-r-none !border-r-0 disabled:opacity-50"
             />
-            <span className="bg-[#1f2937] border border-l-0 border-[#1e293b] rounded-r-lg px-4 py-3 text-indigo-400 font-mono text-sm">
+            <span className="flex items-center px-4 rounded-r-xl text-indigo-400 font-mono text-sm font-medium"
+              style={{
+                background: 'rgba(99,102,241,0.06)',
+                border: '1px solid var(--border-default)',
+                borderLeft: 'none',
+              }}>
               .init
             </span>
           </div>
           {username && step === 0 && (
-            <p className="text-xs text-slate-500 mt-1">
-              Your agent will be discoverable as <span className="text-indigo-400">{username}.init</span>
+            <p className="text-[11px] text-slate-500 mt-1.5">
+              Your agent will be discoverable as <span className="text-indigo-400 font-medium">{username}.init</span>
             </p>
           )}
         </div>
 
         {/* Service Type */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Service Type</label>
+          <label className="block text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Service Type</label>
           <div className="grid grid-cols-2 gap-2">
             {SERVICE_TYPES.map((type) => (
               <button
                 key={type.value}
                 onClick={() => step === 0 && setServiceType(type.value)}
                 disabled={step >= 1}
-                className={`p-3 rounded-lg border text-left transition-all disabled:opacity-50 ${
+                className={`group p-3.5 rounded-xl text-left transition-all disabled:opacity-50 relative overflow-hidden ${
                   serviceType === type.value
-                    ? "border-indigo-500 bg-indigo-500/10 text-white"
-                    : "border-[#1e293b] bg-[#0a0b14] text-slate-400 hover:border-[#374151]"
+                    ? "text-white"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
+                style={{
+                  background: serviceType === type.value
+                    ? 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))'
+                    : 'rgba(6,7,14,0.6)',
+                  border: serviceType === type.value
+                    ? '1px solid rgba(99,102,241,0.3)'
+                    : '1px solid var(--border-default)',
+                }}
               >
-                <p className="text-sm font-medium">{type.label}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{type.description}</p>
+                <div className="flex items-center gap-2.5 mb-1">
+                  <svg className={`w-4 h-4 ${serviceType === type.value ? 'text-indigo-400' : 'text-slate-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={serviceTypeIcons[type.value] || serviceTypeIcons["data-analysis"]} />
+                  </svg>
+                  <p className="text-[13px] font-medium">{type.label}</p>
+                </div>
+                <p className="text-[11px] text-slate-500 ml-6.5">{type.description}</p>
               </button>
             ))}
           </div>
@@ -130,20 +151,20 @@ export default function RegisterPage() {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
+          <label className="block text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="AI data analyst powered by Claude Sonnet 4, specializing in DeFi pool analysis and risk scoring..."
             rows={3}
             disabled={step >= 1}
-            className="w-full bg-[#0a0b14] border border-[#1e293b] rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all resize-none disabled:opacity-50"
+            className="input resize-none disabled:opacity-50"
           />
         </div>
 
         {/* Stake Amount */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Performance Bond (Stake)</label>
+          <label className="block text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Performance Bond</label>
           <input
             type="range"
             min={Number(PROTOCOL_CONFIG.minimumStake)}
@@ -153,62 +174,92 @@ export default function RegisterPage() {
             disabled={step >= 1}
             className="w-full accent-indigo-500"
           />
-          <div className="flex justify-between text-sm mt-2">
-            <span className="text-slate-500">Min: {PROTOCOL_CONFIG.minimumStake} INIT</span>
-            <span className="text-white font-bold text-lg">{stakeAmount} INIT</span>
-            <span className="text-slate-500">Max: 500 INIT</span>
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-[11px] text-slate-500">Min: {PROTOCOL_CONFIG.minimumStake} INIT</span>
+            <span className="stat-number !text-xl text-white">{stakeAmount} <span className="text-[13px] text-slate-500 font-normal">INIT</span></span>
+            <span className="text-[11px] text-slate-500">Max: 500 INIT</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">Higher stake = more trust signal. Stake is at-risk on SLA breach.</p>
+          <p className="text-[11px] text-slate-600 mt-1">Higher stake = stronger trust signal. At-risk on SLA breach.</p>
         </div>
 
         {/* Cost Summary */}
-        <div className="p-4 bg-[#0a0b14] rounded-lg border border-[#1e293b] space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Registration Fee</span>
-            <span className="text-slate-300">{PROTOCOL_CONFIG.registrationFee} INIT</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Performance Bond</span>
-            <span className="text-slate-300">{stakeAmount} INIT</span>
-          </div>
-          <div className="border-t border-[#1e293b] pt-2 flex justify-between">
-            <span className="text-sm font-medium text-white">Total</span>
-            <span className="text-lg font-bold gradient-text">{totalCost} INIT</span>
+        <div className="rounded-xl overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.04), rgba(139,92,246,0.02))',
+            border: '1px solid rgba(99,102,241,0.08)',
+          }}>
+          <div className="p-4 space-y-2.5">
+            <div className="flex justify-between text-[12px]">
+              <span className="text-slate-500">Registration Fee</span>
+              <span className="text-slate-300 font-mono">{PROTOCOL_CONFIG.registrationFee} INIT</span>
+            </div>
+            <div className="flex justify-between text-[12px]">
+              <span className="text-slate-500">Performance Bond</span>
+              <span className="text-slate-300 font-mono">{stakeAmount} INIT</span>
+            </div>
+            <div className="pt-2.5" style={{ borderTop: '1px solid rgba(99,102,241,0.08)' }}>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] font-medium text-white">Total</span>
+                <span className="stat-number !text-2xl gradient-text">{totalCost} <span className="text-[13px] text-slate-400 font-normal">INIT</span></span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="flex items-center gap-2.5 p-3.5 rounded-xl"
+            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.12)' }}>
+            <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+            <p className="text-[12px] text-red-400">{error}</p>
           </div>
         )}
 
         {/* Progress Steps */}
         {step > 0 && (
           <div className="space-y-2">
-            {steps.map((s, i) => (
-              <div key={i} className="flex items-center gap-3">
-                {s.done ? (
-                  <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">✓</div>
-                ) : step > 0 && i === step - 1 ? (
-                  <div className="w-5 h-5 rounded-full border-2 border-[#374151] animate-spin border-t-indigo-500" />
-                ) : (
-                  <div className="w-5 h-5 rounded-full border-2 border-[#1e293b]" />
-                )}
-                <span className={`text-sm ${s.done ? "text-green-400" : step > 0 && i === step - 1 ? "text-slate-300" : "text-slate-600"}`}>
-                  {s.label}
-                </span>
-              </div>
-            ))}
+            {steps.map((s, i) => {
+              const isDone = i < step;
+              const isCurrent = i === step - 1 && step <= 3;
+              return (
+                <div key={i} className="flex items-center gap-3 py-1.5">
+                  {isDone ? (
+                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
+                      style={{ boxShadow: '0 2px 8px -2px rgba(16,185,129,0.4)' }}>
+                      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    </div>
+                  ) : isCurrent ? (
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                      style={{ border: '2px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.06)' }}>
+                      <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center"
+                      style={{ border: '1px solid rgba(99,102,241,0.06)' }}>
+                      <svg className="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                      </svg>
+                    </div>
+                  )}
+                  <span className={`text-[12px] ${isDone ? "text-emerald-400" : isCurrent ? "text-slate-200" : "text-slate-600"}`}>
+                    {s.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
 
         {/* Tx Hash */}
         {txHash && (
-          <div className="p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-lg flex items-center justify-between">
-            <span className="text-xs text-slate-400">Transaction:</span>
-            <span className="text-xs font-mono text-indigo-400">{txHash.slice(0, 18)}...{txHash.slice(-8)}</span>
+          <div className="flex items-center justify-between p-3 rounded-xl"
+            style={{ background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.08)' }}>
+            <span className="text-[11px] text-slate-500">Transaction</span>
+            <span className="text-[11px] font-mono text-indigo-400">{txHash.slice(0, 18)}...{txHash.slice(-8)}</span>
           </div>
         )}
 
@@ -217,21 +268,34 @@ export default function RegisterPage() {
           <button
             onClick={handleRegister}
             disabled={!username || !description || isSubmitting}
-            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary w-full !py-3.5 !text-[13px] disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isSubmitting ? "Deploying Agent..." : !wallet.isConnected ? "Connect Wallet & Register" : `Register Agent (${totalCost} INIT)`}
           </button>
         ) : (
-          <div className="text-center py-4 bg-green-500/5 border border-green-500/20 rounded-lg">
-            <p className="text-green-400 font-medium text-lg">
+          <div className="text-center py-5 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(16,185,129,0.04), rgba(6,182,212,0.02))',
+              border: '1px solid rgba(16,185,129,0.12)',
+            }}>
+            <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
+              style={{ boxShadow: '0 4px 15px -3px rgba(16,185,129,0.4)' }}>
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+            <p className="text-[15px] text-emerald-400 font-semibold">
               Agent <span className="text-indigo-400">{username}.init</span> is live!
             </p>
-            <p className="text-xs text-slate-400 mt-1">Ghost Wallet session active for 24 hours. Permissions enforced at chain consensus.</p>
+            <p className="text-[11px] text-slate-500 mt-1.5">Ghost Wallet session active for 24 hours. Permissions enforced at chain consensus.</p>
             <button
               onClick={() => router.push("/agents")}
-              className="mt-3 px-4 py-2 text-sm text-indigo-400 border border-indigo-500/20 rounded-lg hover:bg-indigo-500/10 transition-all"
+              className="btn-ghost !py-2 !px-4 !text-[12px] mt-4 inline-flex items-center gap-1.5"
             >
-              View My Agents &rarr;
+              View My Agents
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
             </button>
           </div>
         )}
