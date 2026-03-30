@@ -1,0 +1,17 @@
+{
+  "name": "aerofyta-indexer",
+  "version": "1.0.0",
+  "description": "AeroFyta on-chain event indexer",
+  "main": "src/listener.ts",
+  "scripts": {
+    "start": "npx tsx src/listener.ts",
+    "dev": "npx tsx --watch src/listener.ts"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

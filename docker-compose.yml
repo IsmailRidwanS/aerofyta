@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_RPC_URL=http://minitia:26657
+      - NEXT_PUBLIC_REST_URL=http://minitia:1317
+      - NEXT_PUBLIC_JSON_RPC_URL=http://minitia:8545
+      - NEXT_PUBLIC_WS_URL=ws://agent-runtime:8000/ws
+    depends_on:
+      - agent-runtime
+
+  # AI Agent Runtime (FastAPI)
+  agent-runtime:
+    build:
+      context: ./services/agent-runtime
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - RPC_URL=http://minitia:26657
+      - REST_URL=http://minitia:1317
+      - JSON_RPC_URL=http://minitia:8545
+    env_file:
+      - .env
+
+  # Event Indexer
+  indexer:
+    build:
+      context: ./services/indexer
+    environment:
+      - JSON_RPC_WS=ws://minitia:8546
+      - AGENT_VAULT_ADDRESS=${AGENT_VAULT_ADDRESS}
+      - SLA_ENGINE_ADDRESS=${SLA_ENGINE_ADDRESS}
+    depends_on:
+      - agent-runtime
+
+  # Redis (for WebSocket pub/sub)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"

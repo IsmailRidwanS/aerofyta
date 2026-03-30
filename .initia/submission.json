@@ -1,0 +1,12 @@
+{
+  "project_name": "AeroFyta",
+  "repo_url": "https://github.com/aerofyta/aerofyta",
+  "commit_sha": "0000000000000000000000000000000000000000",
+  "rollup_chain_id": "aerofyta-1",
+  "deployed_address": "0x0000000000000000000000000000000000000000",
+  "vm": "evm",
+  "native_feature": "auto-signing",
+  "core_logic_path": "contracts/src/SLAEngine.sol",
+  "native_feature_frontend_path": "frontend/src/hooks/useAutosign.ts",
+  "demo_video_url": "https://youtube.com/watch?v=PENDING"
+}
